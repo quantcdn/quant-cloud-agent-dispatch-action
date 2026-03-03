@@ -1,0 +1,39 @@
+name: 'Quant Agent Dispatch'
+description: 'Dispatch an AI agent run in test mode with tool fixtures and wait for callback'
+branding:
+  icon: 'play-circle'
+  color: 'blue'
+inputs:
+  quant_api_key:
+    description: 'Quant API key'
+    required: true
+  quant_organization:
+    description: 'Quant organisation name'
+    required: true
+  agent_id:
+    description: 'Agent UUID to dispatch'
+    required: true
+  test_fixtures:
+    description: 'Path to JSON file with tool fixture responses'
+    required: false
+  user_message:
+    description: 'Initial user message to send to the agent'
+    required: false
+    default: 'Begin assessment.'
+  timeout:
+    description: 'Max wait time in seconds for agent completion'
+    required: false
+    default: '300'
+  base_url:
+    description: 'Quant AI API base URL'
+    required: false
+outputs:
+  agent_output:
+    description: 'JSON string of the agent final tool call output'
+  conversation_context:
+    description: 'JSON string of conversation context (tool calls made)'
+  execution_id:
+    description: 'The execution ID for the agent run'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
