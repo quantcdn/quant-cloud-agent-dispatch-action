@@ -25691,7 +25691,26 @@ async function run() {
         const organization = core.getInput('quant_organization', { required: true });
         const agentId = core.getInput('agent_id', { required: true });
         const testFixturesPath = core.getInput('test_fixtures');
-        const userMessage = core.getInput('user_message') || 'Begin assessment.';
+        const userMessageInput = core.getInput('user_message');
+        const userMessageFile = core.getInput('user_message_file');
+        let userMessage = 'Begin assessment.';
+        if (userMessageFile) {
+            try {
+                const inputContent = fs.readFileSync(userMessageFile, 'utf-8');
+                const inputData = JSON.parse(inputContent);
+                userMessage = typeof inputData.message === 'string'
+                    ? inputData.message
+                    : JSON.stringify(inputData.message);
+                core.info(`Loaded user message from ${userMessageFile}`);
+            }
+            catch (err) {
+                core.setFailed(`Failed to read user message file: ${err}`);
+                return;
+            }
+        }
+        else if (userMessageInput) {
+            userMessage = userMessageInput;
+        }
         const timeout = parseInt(core.getInput('timeout') || '300', 10);
         const baseUrl = core.getInput('base_url') || DEFAULT_BASE_URL;
         // Load tool fixtures

@@ -20,6 +20,9 @@ inputs:
     description: 'Initial user message to send to the agent'
     required: false
     default: 'Begin assessment.'
+  user_message_file:
+    description: 'Path to input.json file containing the user message object'
+    required: false
   timeout:
     description: 'Max wait time in seconds for agent completion'
     required: false
