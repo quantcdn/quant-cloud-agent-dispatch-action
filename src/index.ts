@@ -88,7 +88,7 @@ async function run(): Promise<void> {
         error?: string;
       };
 
-      if (pollResult.status === 'completed') {
+      if (pollResult.status === 'complete' || pollResult.status === 'completed') {
         completed = true;
         finalResult = pollResult;
         break;
@@ -105,10 +105,15 @@ async function run(): Promise<void> {
       return;
     }
 
-    // Extract outputs
-    const agentOutput = finalResult.result || {};
+    // Extract outputs — result is nested under finalResult.result
+    const resultData = finalResult.result || {};
+    const agentOutput = resultData;
     const conversationContext = {
-      tool_calls: finalResult.toolCalls || [],
+      tool_calls: (resultData.toolExecutions || []).map((t: any) => ({
+        name: t.name,
+        input: t.input,
+        result: t.result,
+      })),
     };
 
     core.setOutput('agent_output', JSON.stringify(agentOutput));
