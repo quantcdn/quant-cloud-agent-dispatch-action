@@ -25803,7 +25803,7 @@ async function run() {
             ? {
                 tool_call: {
                     name: lastToolCall.name,
-                    parameters: lastToolCall.result || lastToolCall.input || {},
+                    parameters: lastToolCall.input || lastToolCall.result || {},
                 },
                 response: resultData.response,
             }
