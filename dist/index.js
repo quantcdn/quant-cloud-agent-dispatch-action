@@ -25794,11 +25794,12 @@ async function run() {
                 result: t.result,
             })),
         };
-        // Structure agent_output so the portal validation controller can extract
-        // the final tool call via agent_output.tool_call.parameters
-        const lastToolCall = toolExecutions.length > 0
-            ? toolExecutions[toolExecutions.length - 1]
-            : null;
+        // Find the last submission tool call (skip query_vector_db which is a helper)
+        // This ensures we extract the agent's actual output, not a follow-up query
+        const submissionTools = toolExecutions.filter((t) => t.name !== 'query_vector_db');
+        const lastToolCall = submissionTools.length > 0
+            ? submissionTools[submissionTools.length - 1]
+            : (toolExecutions.length > 0 ? toolExecutions[toolExecutions.length - 1] : null);
         const agentOutput = lastToolCall
             ? {
                 tool_call: {
