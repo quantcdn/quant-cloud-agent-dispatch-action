@@ -125,14 +125,29 @@ async function run(): Promise<void> {
 
     // Extract outputs — result is nested under finalResult.result
     const resultData = finalResult.result || {};
-    const agentOutput = resultData;
+    const toolExecutions = resultData.toolExecutions || [];
     const conversationContext = {
-      tool_calls: (resultData.toolExecutions || []).map((t: any) => ({
+      tool_calls: toolExecutions.map((t: any) => ({
         name: t.name,
         input: t.input,
         result: t.result,
       })),
     };
+
+    // Structure agent_output so the portal validation controller can extract
+    // the final tool call via agent_output.tool_call.parameters
+    const lastToolCall = toolExecutions.length > 0
+      ? toolExecutions[toolExecutions.length - 1]
+      : null;
+    const agentOutput = lastToolCall
+      ? {
+          tool_call: {
+            name: lastToolCall.name,
+            parameters: lastToolCall.result || lastToolCall.input || {},
+          },
+          response: resultData.response,
+        }
+      : resultData;
 
     // Write outputs to files to avoid "Argument list too long" with large responses
     const outputDir = process.env.RUNNER_TEMP || '/tmp';
