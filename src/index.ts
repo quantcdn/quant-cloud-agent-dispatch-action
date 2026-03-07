@@ -134,11 +134,23 @@ async function run(): Promise<void> {
       })),
     };
 
+    // Write outputs to files to avoid "Argument list too long" with large responses
+    const outputDir = process.env.RUNNER_TEMP || '/tmp';
+    const agentOutputPath = `${outputDir}/agent-output-${Date.now()}.json`;
+    const contextPath = `${outputDir}/conversation-context-${Date.now()}.json`;
+
+    fs.writeFileSync(agentOutputPath, JSON.stringify(agentOutput));
+    fs.writeFileSync(contextPath, JSON.stringify(conversationContext));
+
+    // Set file paths as outputs (primary)
+    core.setOutput('agent_output_file', agentOutputPath);
+    core.setOutput('conversation_context_file', contextPath);
+    // Also set JSON string outputs for backwards compatibility (may fail with large outputs)
     core.setOutput('agent_output', JSON.stringify(agentOutput));
     core.setOutput('conversation_context', JSON.stringify(conversationContext));
     core.setOutput('execution_id', dispatchResult.testRunId);
 
-    core.info(`Agent completed successfully. Output available in step outputs.`);
+    core.info(`Agent completed successfully. Output written to ${agentOutputPath}`);
   } catch (error) {
     core.setFailed(`Unexpected error: ${error instanceof Error ? error.message : String(error)}`);
   }

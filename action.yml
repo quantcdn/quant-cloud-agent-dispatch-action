@@ -35,6 +35,10 @@ outputs:
     description: 'JSON string of the agent final tool call output'
   conversation_context:
     description: 'JSON string of conversation context (tool calls made)'
+  agent_output_file:
+    description: 'Path to JSON file containing agent output (use instead of agent_output for large responses)'
+  conversation_context_file:
+    description: 'Path to JSON file containing conversation context'
   execution_id:
     description: 'The execution ID for the agent run'
 runs:
