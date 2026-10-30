@@ -42,5 +42,6 @@ outputs:
   execution_id:
     description: 'The execution ID for the agent run'
 runs:
-  using: 'node20'
+  using: 'node24'
+  pre: 'runtime-check.cjs'
   main: 'dist/index.js'
